@@ -1,4 +1,6 @@
+
 using ChapterFT3.Controllers;
+using ChapterFT3.Interfaces;
 using ChapterFT3.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,8 +8,23 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.WithOrigins("https://localhost:3000")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddScoped<SqlContext, SqlContext>();
+
 builder.Services.AddTransient<LivroRepository, LivroRepository>();
+
+builder.Services.AddTransient<IUsuarioRepository, UsuarioRepository>();
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -23,6 +40,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 

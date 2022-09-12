@@ -1,20 +1,20 @@
-﻿using ChapterFT3.Models;
-using ChapterFT3.Repositories;
+﻿using ChapterFT3.Interfaces;
+using ChapterFT3.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChapterFT3.Controllers
 {
-    [Produces("application/json")]  
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
-    public class LivroController : ControllerBase
+    public class UsuarioController : ControllerBase
     {
-        private readonly LivroRepository _livroRepository;
+        private readonly IUsuarioRepository _iUsuarioRepository; 
 
-        public LivroController(LivroRepository livroRep)
+        public UsuarioController(IUsuarioRepository iUsuarioRepository)
         {
-            _livroRepository = livroRep; 
+            _iUsuarioRepository = iUsuarioRepository;
         }
 
         [HttpGet]
@@ -22,7 +22,7 @@ namespace ChapterFT3.Controllers
         {
             try
             {
-                return Ok(_livroRepository.Listar);
+                return Ok(_iUsuarioRepository.Listar());
             }
             catch (Exception e)
             {
@@ -35,14 +35,13 @@ namespace ChapterFT3.Controllers
         {
             try
             {
-               Livro livroBuscado = _livroRepository.BuscarPorId(id);
-                
-                if(livroBuscado == null)
+                Usuario usuarioEncontrado = _iUsuarioRepository.BuscarPorId(id);
+
+                if(usuarioEncontrado == null)
                 {
                     return NotFound();
                 }
-
-                return Ok(livroBuscado);
+                return Ok(usuarioEncontrado);
             }
             catch (Exception e)
             {
@@ -51,14 +50,12 @@ namespace ChapterFT3.Controllers
         }
 
         [HttpPost]
-        public IActionResult Cadastrar(Livro l)
+        public IActionResult Cadastrar(Usuario usuario)
         {
             try
             {
-                _livroRepository.Cadastrar(l);
-
+                _iUsuarioRepository.Cadastrar(usuario);
                 return StatusCode(201);
-                
             }
             catch (Exception e)
             {
@@ -71,31 +68,28 @@ namespace ChapterFT3.Controllers
         {
             try
             {
-                _livroRepository.Deletar(id);
-
-                return Ok("Livro removido com sucesso");
+                _iUsuarioRepository.Deletar(id);
+                return Ok("Usuario deletado com sucesso");
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
-            
         }
 
         [HttpPut("{id}")]
-        public IActionResult Alterar(int id, Livro l)
+        public IActionResult Atualizar(int id, Usuario usuario)
         {
             try
             {
-                _livroRepository.Alterar(id, l);
-
-                return StatusCode(204);
+                _iUsuarioRepository.Atualizar(id, usuario);
+                return Ok("Atualizado com sucesso");
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
-
+    
     }
 }
